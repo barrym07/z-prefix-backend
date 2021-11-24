@@ -38,10 +38,9 @@ function getAllBlogs() {
     .select("*")
     .then(data => data);
 }
-//join might not be correct
+
 function getBlogByUser(username) {
   return knex("posts")
-    // .join("users", "posts.user_id", "users.id")
     .select("*")
     .where("user_name", username)
     .then(data => data);

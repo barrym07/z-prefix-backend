@@ -75,19 +75,15 @@ app.post("/create", (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-//these endpoints work but return an error of {"code":"ERR_HTTP_INVALID_STATUS_CODE"}
 app.put("/blogs/:blogId", (req, res) => {
   let { blogId } = req.params;
   let { body } = req;
   let { title, content } = body;
-  // const err = new Error("Blog not found");
-  // const status = err.status || 500
   updateBlog(req.params.blogId, title, content)
     .then(data => res.status(200).send(data + " updated"))
     .catch(err => res.status(404).send(err + " not found"));
 });
 
-//these endpoints work but return an error of {"code":"ERR_HTTP_INVALID_STATUS_CODE"}
 app.delete("/blogs/:blogId", (req, res) => {
   let { blogId } = req.params;
   deleteBlog(blogId)
