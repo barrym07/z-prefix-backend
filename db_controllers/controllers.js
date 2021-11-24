@@ -47,6 +47,13 @@ function getBlogByUser(username) {
     .then(data => data);
 }
 
+function getBlogById(id) {
+  return knex("posts")
+    .select("*")
+    .where("id", id)
+    .then(data => data);
+}
+
 function deleteBlog(id) {
   return knex("posts")
     .where("id", id)
@@ -65,4 +72,4 @@ function updateBlog(id, title, content) {
 }
 
 
-module.exports = { createUser, getHashedPassword, createBlog, getAllBlogs, getBlogByUser, deleteBlog, updateBlog };
+module.exports = { createUser, getHashedPassword, createBlog, getAllBlogs, getBlogByUser, deleteBlog, updateBlog, getBlogById };

@@ -3,7 +3,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 //functions from controllers
-const { createUser, getHashedPassword, createBlog, getAllBlogs, getBlogByUser, deleteBlog, updateBlog } = require("./db_controllers/controllers.js")
+const { createUser, getHashedPassword, createBlog, getAllBlogs, getBlogByUser, deleteBlog, updateBlog, getBlogById } = require("./db_controllers/controllers.js")
 
 const app = express();
 const roundsOfSalt = 11;
@@ -37,7 +37,7 @@ app.post("/login", (req, res) => {
   getHashedPassword(username).then((hashedPassword) => {
     compare(password, hashedPassword)
       .then((isMatched) => {
-        if (isMatched) res.status(202).json("Success");
+        if (isMatched) res.status(202).json(username);
         else res.status(401).json("failed to match password");
       })
       .catch((err) => res.status(500).json(err));
@@ -50,14 +50,23 @@ app.get("/blogs", (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-app.get("/blogs/:username", (req, res) => {
-  let { username } = req.params;
-  getBlogByUser(username)
+app.get("/blogs/:blogId", (req, res) => {
+  let { blogId } = req.params;
+  getBlogById(blogId)
     .then(data => res.status(200).send(data))
     .catch(err => res.status(500).send(err));
 });
 
-app.post("/blogs", (req, res) => {
+app.get("/", (req, res) => {
+  if (req.query.user) {
+    let username = req.query.user;
+    getBlogByUser(username)
+      .then(data => res.status(200).send(data))
+      .catch(err => res.status(500).send(err));
+  }
+});
+
+app.post("/create", (req, res) => {
   let { body } = req;
   let { title, content, username } = body;
   let created_at = new Date();
@@ -74,16 +83,16 @@ app.put("/blogs/:blogId", (req, res) => {
   // const err = new Error("Blog not found");
   // const status = err.status || 500
   updateBlog(req.params.blogId, title, content)
-    .then(data => res.status(200).send(data))
-    .catch(err => res.status(404).send(err));
+    .then(data => res.status(200).send(data + " updated"))
+    .catch(err => res.status(404).send(err + " not found"));
 });
 
 //these endpoints work but return an error of {"code":"ERR_HTTP_INVALID_STATUS_CODE"}
 app.delete("/blogs/:blogId", (req, res) => {
   let { blogId } = req.params;
   deleteBlog(blogId)
-    .then(data => res.status(200).send(data))
-    .catch(err => res.status(500).send(err));
+    .then(data => res.status(200).send(data + " deleted"))
+    .catch(err => res.status(500).send(err + " we got this error"));
 });
 
 
